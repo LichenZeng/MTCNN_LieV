@@ -7,8 +7,10 @@ def iou(box, boxes, mode="UNION"):
     top_y = np.maximum(box[1], boxes[:, 1])
     bottom_x = np.minimum(box[2], boxes[:, 2])
     bottom_y = np.minimum(box[3], boxes[:, 3])
-    w = np.max(0, (bottom_x - top_x))
-    h = np.max(0, (bottom_y - top_y))
+    # w = 0 if (bottom_x - top_x) <= 0 else (bottom_x - top_x)
+    # h = 0 if (bottom_y - top_y) <= 0 else (bottom_y - top_y)
+    w = np.maximum(0, (bottom_x - top_x))
+    h = np.maximum(0, (bottom_y - top_y))
 
     j_area = w * h
     box_area = (box[2] - box[0]) * (box[3] - box[1])

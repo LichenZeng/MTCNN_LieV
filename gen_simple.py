@@ -2,15 +2,18 @@ import numpy as np
 import utils
 from PIL import Image
 import os
+import time
+import matplotlib.pyplot as plt
 
-LABEL_FILE_PATH = r"E:\cebela\Anno\list_bbox_celeba.txt"
-IMAGE_PATH = ""
+LABEL_FILE_PATH = r"/home/tensorflow01/workspace/MTCNN/list_bbox_celeba.txt"
+IMAGE_PATH = r"/home/tensorflow01/workspace/MTCNN/img_celeba"
 
 
 def gen_simple(size):
+    plt.ion()
     for i, line in enumerate(open(LABEL_FILE_PATH)):
         if i > 1:
-            strs = list(filter(bool, line.split(" ")))
+            strs = line.split()
             filename = strs[0].strip()
             x1 = int(strs[1].strip())
             y1 = int(strs[2].strip())
@@ -21,7 +24,7 @@ def gen_simple(size):
             cx = x1 + w / 2
             cy = y1 + h / 2
 
-            for _ in range(100):
+            for _ in range(5):
                 dx = np.random.uniform(-0.2, 0.2)
                 dy = np.random.uniform(-0.2, 0.2)
                 dw = np.random.uniform(-0.2, 0.2)
@@ -43,12 +46,16 @@ def gen_simple(size):
                 im = Image.open(os.path.join(IMAGE_PATH, filename))
 
                 _box = utils.rect2squar(np.array([box]))[0]
-                im = im.corp(_box[0:4])
-                im.resize(size)
 
+                im = im.crop(_box[0:4])
+                im.resize((size, size))
                 iou = utils.iou(_box, boxes)
 
                 if iou[0] > 0.65:  # 正样本
+                    # im.show()
+                    # time.sleep(2)
+                    plt.imshow(im)
+                    plt.pause(1)
                     pass
                 elif iou[0] > 0.4:  # 部分样本
                     pass
