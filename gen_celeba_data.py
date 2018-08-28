@@ -4,9 +4,9 @@ import numpy as np
 from tool import utils
 import traceback
 
-label_path = r"/home/tensorflow01/workspace/MTCNN/list_bbox_celeba.txt"
-img_path = r"/home/tensorflow01/workspace/MTCNN/img_celeba"
-save_path = r"/home/tensorflow01/workspace/MTCNN/samples"
+label_path = r"./img_celeba_4dbg/list_bbox_celeba.txt"
+img_path = r"./img_celeba_4dbg/"
+save_path = r"../img_celeba_4dbg/"
 
 for face_size in [12, 24, 48]:
 
@@ -129,7 +129,8 @@ for face_size in [12, 24, 48]:
                             negative_count += 1
 
             except Exception as e:
-                traceback.print_exc()
+                print("List empty now!")
+                # traceback.print_exc()
 
     finally:
         positive_file.close()
