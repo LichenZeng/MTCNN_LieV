@@ -1,16 +1,11 @@
 import torch
-from torch.autograd import Variable
-
-from PIL import Image
-from PIL import ImageDraw
-import numpy as np
-
-from tool import utils
-
-import nets
-
 from torchvision import transforms
+from torch.autograd import Variable
+from PIL import Image, ImageDraw
+import numpy as np
 import time
+from tool import utils
+import nets
 
 
 class Detector:
@@ -199,6 +194,7 @@ class Detector:
     # 将回归量还原到原图上去
     def __box(self, start_index, offset, cls, scale, stride=2, side_len=12):
 
+        start_index = start_index.data.numpy()  # Important: LongTensor to numpy
         _x1 = (start_index[1] * stride) / scale
         _y1 = (start_index[0] * stride) / scale
         _x2 = (start_index[1] * stride + side_len) / scale
@@ -218,12 +214,11 @@ class Detector:
 
 if __name__ == '__main__':
 
-    image_file = "D:\\PPP/但悦铭/微信图片_20180222172119.jpg"
+    image_file = "./img_celeba_4dbg/000002.jpg"
     detector = Detector()
 
     with Image.open(image_file) as im:
-        # boxes = detector.detect(im)
-        # print("----------------------------")
+        # im.show()
         boxes = detector.detect(im)
         print(im.size)
         imDraw = ImageDraw.Draw(im)
