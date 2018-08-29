@@ -1,11 +1,11 @@
 from PIL import Image, ImageDraw
 import numpy as np
 
-im = Image.open(r"/home/tensorflow01/workspace/MTCNN/img_celeba/000001.jpg")
+im = Image.open(r"/home/tensorflow01/workspace/MTCNN/img_celeba/000008.jpg")
 print(im.size)
 
 imDraw = ImageDraw.Draw(im)
-imDraw.rectangle((95, 71, 95 + 226, 71 + 313), outline='red')
+imDraw.rectangle((212, 89, 212 + 218, 89 + 302), outline='red')
 im.show()
 
 boxes = np.array([[22, 2, 3, 4], [2, 6, 7, 8]])

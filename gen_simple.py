@@ -5,8 +5,8 @@ import os
 import time
 import matplotlib.pyplot as plt
 
-LABEL_FILE_PATH = r"/home/tensorflow01/workspace/MTCNN/list_bbox_celeba.txt"
-IMAGE_PATH = r"/home/tensorflow01/workspace/MTCNN/img_celeba"
+LABEL_FILE_PATH = r"img_celeba_4dbg/list_bbox_celeba.txt"
+IMAGE_PATH = r"img_celeba_4dbg"
 
 
 def gen_simple(size):
@@ -50,12 +50,12 @@ def gen_simple(size):
                 im = im.crop(_box[0:4])
                 im.resize((size, size))
                 iou = utils.iou(_box, boxes)
+                plt.imshow(im)
+                plt.pause(1)
 
                 if iou[0] > 0.65:  # 正样本
                     # im.show()
                     # time.sleep(2)
-                    plt.imshow(im)
-                    plt.pause(1)
                     pass
                 elif iou[0] > 0.4:  # 部分样本
                     pass

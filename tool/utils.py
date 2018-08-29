@@ -24,7 +24,6 @@ def iou(box, boxes, isMin=False):
 def nms(boxes, thresh=0.3, isMin=False):
     if boxes.shape[0] == 0:
         return np.array([])
-
     _boxes = boxes[(-boxes[:, 4]).argsort()]
     r_boxes = []
 
@@ -35,7 +34,6 @@ def nms(boxes, thresh=0.3, isMin=False):
         r_boxes.append(a_box)
 
         # print(iou(a_box, b_boxes))
-
         index = np.where(iou(a_box, b_boxes, isMin) < thresh)
         _boxes = b_boxes[index]
 
