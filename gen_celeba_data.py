@@ -89,9 +89,10 @@ for face_size in [12, 24, 48]:
                         face_crop = img.crop(crop_box)
                         face_resize = face_crop.resize((face_size, face_size), Image.ANTIALIAS)
 
-                        iou = utils.iou(crop_box, _boxes)[0]
+                        iou = utils.iou(crop_box, _boxes, False)[0]
+                        iou_min = utils.iou(crop_box, _boxes, True)[0]
 
-                        if iou > 0.65:  # 正样本
+                        if iou > 0.65 and iou_min > 0.65:  # 正样本
                             positive_file.write(
                                 "positive/{0}.jpg {1} {2} {3} {4} {5}\n".format(positive_count, 1, offset_x1, offset_y1,
                                                                                 offset_x2, offset_y2))
@@ -99,7 +100,7 @@ for face_size in [12, 24, 48]:
                             face_resize.save(os.path.join(positive_image_dir, "{0}.jpg".format(positive_count)))
                             positive_count += 1
 
-                        elif iou > 0.4:  # 部分样本
+                        elif iou > 0.4 and iou_min > 0.4:  # 部分样本
                             part_file.write(
                                 "part/{0}.jpg {1} {2} {3} {4} {5}\n".format(part_count, 2, offset_x1, offset_y1,
                                                                             offset_x2, offset_y2))
@@ -107,7 +108,7 @@ for face_size in [12, 24, 48]:
                             face_resize.save(os.path.join(part_image_dir, "{0}.jpg".format(part_count)))
                             part_count += 1
 
-                        elif iou < 0.3:
+                        elif iou < 0.3 and iou_min < 0.3:
                             negative_file.write("negative/{0}.jpg {1} 0 0 0 0\n".format(negative_count, 0))
                             negative_file.flush()
                             face_resize.save(os.path.join(negative_image_dir, "{0}.jpg".format(negative_count)))
@@ -120,7 +121,7 @@ for face_size in [12, 24, 48]:
                         y_ = np.random.randint(0, img_h - side_len)
                         crop_box = np.array([x_, y_, x_ + side_len, y_ + side_len])
 
-                        if np.max(utils.iou(crop_box, _boxes)) < 0.3:
+                        if utils.iou(crop_box, _boxes, False) < 0.3 and utils.iou(crop_box, _boxes, True) < 0.3:
                             face_crop = img.crop(crop_box)
                             face_resize = face_crop.resize((face_size, face_size), Image.ANTIALIAS)
                             negative_file.write("negative/{0}.jpg {1} 0 0 0 0\n".format(negative_count, 0))
