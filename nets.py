@@ -11,9 +11,9 @@ class PNet(nn.Module):
         super(PNet, self).__init__()
 
         self.pre_layer = nn.Sequential(
-            nn.Conv2d(3, 10, kernel_size=3, stride=1, padding=1),  # conv1, padding must be 1 when 3*3
+            nn.Conv2d(3, 10, kernel_size=3, stride=1),  # conv1, padding must be 1 when 3*3
             nn.PReLU(),  # PReLU1
-            nn.MaxPool2d(kernel_size=3, stride=2),  # pool1
+            nn.MaxPool2d(kernel_size=2, stride=2),  # pool1
             nn.Conv2d(10, 16, kernel_size=3, stride=1),  # conv2
             nn.PReLU(),  # PReLU2
             nn.Conv2d(16, 32, kernel_size=3, stride=1),  # conv3
