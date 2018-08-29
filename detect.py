@@ -4,6 +4,7 @@ from torch.autograd import Variable
 from PIL import Image, ImageDraw
 import numpy as np
 import time
+import cv2
 from tool import utils
 import nets
 
@@ -213,8 +214,7 @@ class Detector:
 
 
 if __name__ == '__main__':
-    image_file = "./img_celeba_4dbg/000008.jpg"
-    # image_file = "../img_celeba_4dbg/48/part/0.jpg"
+    image_file = "../img_celeba_4dbg/000008.jpg"
     detector = Detector()
 
     with Image.open(image_file) as im:
@@ -232,3 +232,45 @@ if __name__ == '__main__':
             imDraw.rectangle((x1, y1, x2, y2), outline='red')
 
         im.show()
+
+    # To recognize video
+    cap = cv2.VideoCapture(r"/home/tensorflow01/workspace/MTCNN/MTCNN/test_0808/test/test.mp4")
+    count = 0
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if ret:
+            count += 1
+            # if count % 1 == 0:
+            # 转换通道, 转成Image 格式
+            b, g, r = cv2.split(frame)
+            img = cv2.merge([r, g, b])
+            img = Image.fromarray(img.astype(np.uint8))
+
+            boxes = detector.detect(img)
+            imDraw = ImageDraw.Draw(img)
+            for box in boxes:
+                x1 = int(box[0])
+                y1 = int(box[1])
+                x2 = int(box[2])
+                y2 = int(box[3])
+
+                print(box[4])
+                imDraw.rectangle((x1, y1, x2, y2), outline='red')
+
+            img = np.array(img, dtype=np.uint8)
+
+            # 转换通道BGR
+            r, g, b = cv2.split(img)
+            img = cv2.merge([b, g, r])
+            cv2.imshow("img", img)
+            # else:
+            #     cv2.imshow("img", frame)
+        else:
+            continue
+
+        k = cv2.waitKey(1)
+        # q键退出
+        if (k & 0xff == ord('q')):
+            break
+    cap.release()
+    cv2.destroyAllWindows()
