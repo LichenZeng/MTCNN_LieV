@@ -4,9 +4,9 @@ import numpy as np
 from tool import utils
 import traceback
 
-label_path = r"./img_celeba_4dbg/list_bbox_celeba.txt"
-img_path = r"./img_celeba_4dbg/"
-save_path = r"../img_celeba_4dbg/"
+label_path = r"/home/tensorflow01/workspace/MTCNN/list_bbox_celeba.txt"
+img_path = r"/home/tensorflow01/workspace/MTCNN/img_celeba"
+save_path = r"/home/tensorflow01/workspace/MTCNN/samples"
 
 for face_size in [12, 24, 48]:
 

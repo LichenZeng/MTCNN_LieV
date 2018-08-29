@@ -80,9 +80,8 @@ class Detector:
             img = img.resize((24, 24))
             img_data = self.__image_transform(img)
             _img_dataset.append(img_data)
-            # print(_img_dataset)
+
         img_dataset = Variable(torch.stack(_img_dataset))
-        # print(img_data, img_data.shape)
         if self.isCuda:
             img_dataset = img_dataset.cuda()
 
@@ -92,7 +91,7 @@ class Detector:
         offset = _offset.cpu().data.numpy()
 
         boxes = []
-        idxs, _ = np.where(cls > 0.8)
+        idxs, _ = np.where(cls > 0.7)
         for idx in idxs:
             _box = _pnet_boxes[idx]
             _x1 = int(_box[0])
@@ -110,7 +109,7 @@ class Detector:
 
             boxes.append([x1, y1, x2, y2, cls[idx][0]])
 
-        return utils.nms(np.array(boxes), 0.7)
+        return utils.nms(np.array(boxes), 0.5)
 
     def __onet_detect(self, image, rnet_boxes):
 
@@ -137,7 +136,7 @@ class Detector:
         offset = _offset.cpu().data.numpy()
 
         boxes = []
-        idxs, _ = np.where(cls > 0.9999)
+        idxs, _ = np.where(cls > 0.97)
         for idx in idxs:
             _box = _rnet_boxes[idx]
             _x1 = int(_box[0])
@@ -155,7 +154,7 @@ class Detector:
 
             boxes.append([x1, y1, x2, y2, cls[idx][0]])
 
-        return utils.nms(np.array(boxes), 0.8, isMin=True)
+        return utils.nms(np.array(boxes), 0.7, isMin=True)
 
     def __pnet_detect(self, image):
 
@@ -214,10 +213,7 @@ class Detector:
 
 
 if __name__ == '__main__':
-    # for i in range(1, 17):
     image_file = "./img_celeba_4dbg/000008.jpg"
-    print(image_file)
-    # image_file = "./img_celeba_4dbg/000006.jpg"
     # image_file = "../img_celeba_4dbg/48/part/0.jpg"
     detector = Detector()
 

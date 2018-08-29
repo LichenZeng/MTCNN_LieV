@@ -31,7 +31,7 @@ class Trainer:
 
     def train(self):
         faceDataset = FaceDataset(self.dataset_path, transform=tf)
-        dataloader = DataLoader(faceDataset, batch_size=10, shuffle=True, num_workers=2)
+        dataloader = DataLoader(faceDataset, batch_size=512, shuffle=True, num_workers=4)
 
         while True:
             for i, (_img_data, _category, _offset) in enumerate(dataloader):
