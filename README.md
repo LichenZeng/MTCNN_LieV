@@ -21,3 +21,6 @@ dataloader = DataLoader(faceDataset, batch_size=10, shuffle=True, num_workers=2)
 offset_index = torch.nonzero(offset_mask)[:, 0]  # 选出非负样本的索引
 
 
+3, 调试技巧
+可以使用小批量测试集合来测试过拟合，判断代码是否有问题；
+可以使用小尺寸图片（如24x24）来调试代码错误，方便问题跟踪；
