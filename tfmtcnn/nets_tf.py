@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import numpy as np
 import tensorflow as tf
@@ -9,75 +10,84 @@ from simpling import FaceDataset
 
 class PNet:
 
-    def __init__(self):
+    def __init__(self, scope):
+        self.scope = scope
         print("Init PNet.")
         # 1. Input:
         # self.x = tf.placeholder(tf.float32, shape=[None, 12, 12, 3])
 
     def forward(self, x):
-        # 2. Common Networks Layers
-        self.conv1 = nn.conv2d(inputs=x, filters=10, kernel_size=[3, 3], activation=tf.nn.relu)
-        self.conv1 = nn.max_pooling2d(self.conv1, pool_size=2, strides=2)
-        self.conv2 = nn.conv2d(inputs=self.conv1, filters=16, kernel_size=[3, 3], activation=tf.nn.relu)
-        self.conv3 = nn.conv2d(inputs=self.conv2, filters=32, kernel_size=[3, 3], activation=tf.nn.relu)
+        with tf.variable_scope(self.scope, reuse=tf.AUTO_REUSE):
+            # 2. Common Networks Layers
+            self.conv1 = nn.conv2d(inputs=x, filters=10, kernel_size=[3, 3], activation=tf.nn.relu)
+            self.conv1 = nn.max_pooling2d(self.conv1, pool_size=2, strides=2)
+            self.conv2 = nn.conv2d(inputs=self.conv1, filters=16, kernel_size=[3, 3], activation=tf.nn.relu)
+            self.conv3 = nn.conv2d(inputs=self.conv2, filters=32, kernel_size=[3, 3], activation=tf.nn.relu)
 
-        self.conv4_1 = nn.conv2d(inputs=self.conv3, filters=16, kernel_size=[1, 1], activation=tf.nn.relu)
-        self.conv4_1 = nn.conv2d(inputs=self.conv4_1, filters=8, kernel_size=[1, 1], activation=tf.nn.relu)
-        self.conv4_1 = nn.conv2d(inputs=self.conv4_1, filters=1, kernel_size=[1, 1], activation=tf.nn.sigmoid)
+            self.conv4_1 = nn.conv2d(inputs=self.conv3, filters=16, kernel_size=[1, 1], activation=tf.nn.relu)
+            self.conv4_1 = nn.conv2d(inputs=self.conv4_1, filters=8, kernel_size=[1, 1], activation=tf.nn.relu)
+            self.conv4_1 = nn.conv2d(inputs=self.conv4_1, filters=1, kernel_size=[1, 1], activation=tf.nn.sigmoid)
 
-        self.conv4_2 = nn.conv2d(inputs=self.conv3, filters=4, kernel_size=[1, 1])
+            self.conv4_2 = nn.conv2d(inputs=self.conv3, filters=4, kernel_size=[1, 1])
 
         return self.conv4_1, self.conv4_2
 
 
 class RNet:
 
-    def __init__(self):
+    def __init__(self, scope):
+        self.scope = scope
         print("Init RNet.")
         # 1. Input:
         # self.x = tf.placeholder(tf.float32, shape=[None, 24, 24, 3])
 
     def forward(self, x):
-        # 2. Common Networks Layers
-        self.conv1 = nn.conv2d(inputs=x, filters=28, kernel_size=[3, 3], activation=tf.nn.relu)
-        self.conv1 = nn.max_pooling2d(self.conv1, pool_size=3, strides=2)
-        self.conv2 = nn.conv2d(inputs=self.conv1, filters=48, kernel_size=[3, 3], activation=tf.nn.relu)
-        self.conv2 = nn.max_pooling2d(self.conv2, pool_size=3, strides=2)
-        self.conv3 = nn.conv2d(inputs=self.conv2, filters=64, kernel_size=[2, 2], activation=tf.nn.relu)
-        self.conv4 = nn.conv2d(inputs=self.conv3, filters=64, kernel_size=[2, 2], activation=tf.nn.relu)
-        self.conv5_1 = nn.conv2d(inputs=self.conv4, filters=1, kernel_size=[1, 1], activation=tf.nn.sigmoid)
-        self.conv5_2 = nn.conv2d(inputs=self.conv4, filters=4, kernel_size=[1, 1])
+        with tf.variable_scope(self.scope, reuse=tf.AUTO_REUSE):
+            # 2. Common Networks Layers
+            self.conv1 = nn.conv2d(inputs=x, filters=28, kernel_size=[3, 3], activation=tf.nn.relu)
+            self.conv1 = nn.max_pooling2d(self.conv1, pool_size=3, strides=2)
+            self.conv2 = nn.conv2d(inputs=self.conv1, filters=48, kernel_size=[3, 3], activation=tf.nn.relu)
+            self.conv2 = nn.max_pooling2d(self.conv2, pool_size=3, strides=2)
+            self.conv3 = nn.conv2d(inputs=self.conv2, filters=64, kernel_size=[2, 2], activation=tf.nn.relu)
+            # self.conv4 = nn.conv2d(inputs=self.conv3, filters=64, kernel_size=[2, 2], activation=tf.nn.relu)
+            # self.conv5_1 = nn.conv2d(inputs=self.conv4, filters=1, kernel_size=[1, 1], activation=tf.nn.sigmoid)
+            # self.conv5_2 = nn.conv2d(inputs=self.conv4, filters=4, kernel_size=[1, 1])
+            #
+            # return self.conv5_1, self.conv5_2
 
-        # # This is a wrong method, because the batch number is unknown
-        # # self.conv_flat = tf.reshape(self.conv3, [self.conv3.get_shape()[0], -1])
-        # self.conv_flat = tf.reshape(self.conv3, (-1, 2 * 2 * 64))
-        # self.fc1 = tf.layers.dense(inputs=self.conv_flat, units=128, activation=tf.nn.relu)
-        # self.fc2_1 = tf.layers.dense(inputs=self.fc1, units=1, activation=tf.nn.sigmoid)
-        # self.fc2_2 = tf.layers.dense(inputs=self.fc1, units=4)
-        # return self.fc2_1, self.fc2_2
+            # This is a wrong method, because the batch number is unknown
+            # self.conv_flat = tf.reshape(self.conv3, [self.conv3.get_shape()[0], -1])
+            self.conv_flat = tf.reshape(self.conv3, (-1, 2 * 2 * 64))
+            self.fc1 = tf.layers.dense(inputs=self.conv_flat, units=128, activation=tf.nn.relu)
+            self.fc1 = tf.layers.dense(inputs=self.fc1, units=64, activation=tf.nn.relu)
+            self.fc1 = tf.layers.dense(inputs=self.fc1, units=32, activation=tf.nn.relu)
+            self.fc2_1 = tf.layers.dense(inputs=self.fc1, units=1, activation=tf.nn.sigmoid)
+            self.fc2_2 = tf.layers.dense(inputs=self.fc1, units=4)
 
-        return self.conv5_1, self.conv5_2
+        return self.fc2_1, self.fc2_2
 
 
 class ONet:
 
-    def __init__(self):
+    def __init__(self, scope):
+        self.scope = scope
         print("Init ONet.")
         # 1. Input:
         # self.x = tf.placeholder(tf.float32, shape=[None, 48, 48, 3])
 
     def forward(self, x):
-        # 2. Common Networks Layers
-        self.conv1 = nn.conv2d(inputs=x, filters=32, kernel_size=[3, 3], activation=tf.nn.relu)
-        self.conv1 = nn.max_pooling2d(self.conv1, pool_size=3, strides=2)
-        self.conv2 = nn.conv2d(inputs=self.conv1, filters=64, kernel_size=[3, 3], activation=tf.nn.relu)
-        self.conv2 = nn.max_pooling2d(self.conv2, pool_size=3, strides=2)
-        self.conv3 = nn.conv2d(inputs=self.conv2, filters=64, kernel_size=[3, 3], activation=tf.nn.relu)
-        self.conv3 = nn.max_pooling2d(self.conv3, pool_size=2, strides=2)
-        self.conv4 = nn.conv2d(inputs=self.conv3, filters=128, kernel_size=[2, 2], activation=tf.nn.relu)
-        self.conv5 = nn.conv2d(inputs=self.conv4, filters=64, kernel_size=[2, 2], activation=tf.nn.relu)
-        self.conv6_1 = nn.conv2d(inputs=self.conv5, filters=1, kernel_size=[1, 1], activation=tf.nn.sigmoid)
-        self.conv6_2 = nn.conv2d(inputs=self.conv5, filters=4, kernel_size=[1, 1])
+        with tf.variable_scope(self.scope, reuse=tf.AUTO_REUSE):
+            # 2. Common Networks Layers
+            self.conv1 = nn.conv2d(inputs=x, filters=32, kernel_size=[3, 3], activation=tf.nn.relu)
+            self.conv1 = nn.max_pooling2d(self.conv1, pool_size=3, strides=2)
+            self.conv2 = nn.conv2d(inputs=self.conv1, filters=64, kernel_size=[3, 3], activation=tf.nn.relu)
+            self.conv2 = nn.max_pooling2d(self.conv2, pool_size=3, strides=2)
+            self.conv3 = nn.conv2d(inputs=self.conv2, filters=64, kernel_size=[3, 3], activation=tf.nn.relu)
+            self.conv3 = nn.max_pooling2d(self.conv3, pool_size=2, strides=2)
+            self.conv4 = nn.conv2d(inputs=self.conv3, filters=128, kernel_size=[2, 2], activation=tf.nn.relu)
+            self.conv5 = nn.conv2d(inputs=self.conv4, filters=64, kernel_size=[2, 2], activation=tf.nn.relu)
+            self.conv6_1 = nn.conv2d(inputs=self.conv5, filters=1, kernel_size=[1, 1], activation=tf.nn.sigmoid)
+            self.conv6_2 = nn.conv2d(inputs=self.conv5, filters=4, kernel_size=[1, 1])
 
         return self.conv6_1, self.conv6_2
 
@@ -90,13 +100,24 @@ class Net:
         self.off = tf.placeholder(tf.float32, shape=[None, 4])
 
         if net_size == 12:
-            self.net = PNet()
+            self.scope = "pnet"
+            self.net = PNet(self.scope)
         elif net_size == 24:
-            self.net = RNet()
+            self.scope = "rnet"
+            self.net = RNet(self.scope)
         elif net_size == 48:
-            self.net = ONet()
+            self.scope = "onet"
+            self.net = ONet(self.scope)
         else:
             print("The vaild net size is (12, 24, 48)!")
+            exit(-1)
+
+        self.forword()
+        self.backward()
+
+        self.sess = tf.Session()
+        self.sess.run(tf.global_variables_initializer())
+        self.saver = tf.train.Saver([v for v in tf.global_variables() if v.name[0:4] == self.scope])
 
     def forword(self):
         self.cls_pre, self.off_pre = self.net.forward(self.input)
@@ -125,11 +146,20 @@ class Net:
         #     tf.nn.sigmoid_cross_entropy_with_logits(labels=self.cls_l_p, logits=self.cls_p_p)) \
         #                 + tf.reduce_mean(
         #     tf.nn.sigmoid_cross_entropy_with_logits(labels=self.cls_l_n, logits=self.cls_p_n))
-
-        self.cls_opt = tf.train.AdamOptimizer(0.0002).minimize(self.cls_loss)
-
         self.off_loss = tf.reduce_mean(tf.losses.mean_squared_error(self.off_l, self.off_p))
-        self.off_opt = tf.train.AdamOptimizer().minimize(self.off_loss)
+
+        with tf.variable_scope(self.scope, reuse=tf.AUTO_REUSE):
+            self.cls_opt = tf.train.AdamOptimizer(0.0002).minimize(self.cls_loss)
+            self.off_opt = tf.train.AdamOptimizer().minimize(self.off_loss)
+
+    def load_param(self, param_path):
+        checkpoint = tf.train.get_checkpoint_state(param_path)
+        print("zeng>> ck", checkpoint)
+        if checkpoint and checkpoint.model_checkpoint_path:
+            self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
+            print("Successfully loaded:", checkpoint.model_checkpoint_path)
+        else:
+            print("Could not find old network weights from", param_path)
 
 
 save_path_base = "./tfparam"
@@ -140,16 +170,16 @@ dataset_path = os.path.join(dataset_path_base, str(size))
 
 if __name__ == '__main__':
     net = Net(size)
-    net.forword()
-    net.backward()
 
     faceDataset = FaceDataset(dataset_path)
     dataloader = DataLoader(faceDataset, batch_size=50, shuffle=True, num_workers=4)
 
     init = tf.global_variables_initializer()
-    saver = tf.train.Saver(max_to_keep=4)
+    saver = tf.train.Saver()
     with tf.Session() as sess:
         sess.run(init)
+
+        print(tf.global_variables())
 
         checkpoint = tf.train.get_checkpoint_state(save_path)
         if checkpoint and checkpoint.model_checkpoint_path:
