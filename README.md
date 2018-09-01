@@ -24,3 +24,14 @@ offset_index = torch.nonzero(offset_mask)[:, 0]  # 选出非负样本的索引
 3, 调试技巧
 可以使用小批量测试集合来测试过拟合，判断代码是否有问题；
 可以使用小尺寸图片（如24x24）来调试代码错误，方便问题跟踪；
+
+
+Author: Lycan
+Date: 20180831
+
+1, Tensorflow形状变换问题
+# This is a wrong method, because the batch number is unknown
+# self.conv_flat = tf.reshape(self.conv3, [self.conv3.get_shape()[0], -1])
+在已知后面形状时，可以使用如下方法：
+self.conv_flat = tf.reshape(self.conv3, (-1, 2 * 2 * 64))
+或者用全卷积
