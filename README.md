@@ -35,3 +35,14 @@ Date: 20180831
 在已知后面形状时，可以使用如下方法：
 self.conv_flat = tf.reshape(self.conv3, (-1, 2 * 2 * 64))
 或者用全卷积
+
+
+2, 在Tensorflow中，可以运用这种方式来接收任意形状的张量输入
+self.input = tf.placeholder(tf.float32, shape=[None, None, None, 3])
+
+
+3, 在Tensorflow中，可以通过这个方式来加载不同的训练参数模型
+self.saver = tf.train.Saver([v for v in tf.global_variables() if v.name[0:4] == self.scope])
+
+with tf.variable_scope(self.scope, reuse=tf.AUTO_REUSE):
+    ...
