@@ -46,3 +46,38 @@ self.saver = tf.train.Saver([v for v in tf.global_variables() if v.name[0:4] == 
 
 with tf.variable_scope(self.scope, reuse=tf.AUTO_REUSE):
     ...
+
+
+20180918
+======
+1, 动态显示图片
+    img = cv2.imread(os.path.join(img_path, img_name))
+    cv2.rectangle(img, (x0, y0), (x1, y1), (0, 255, 0), 2)
+    cv2.imshow("image", img)
+    cv2.waitKey(2000)
+cv2.destroyAllWindows()
+
+# 用PIL 结合 matplotlib 动态显示图片，会出现框不完整的问题。
+plt.ion()
+    img = Image.open(os.path.join(img_path, img_name))  # type: Image.Image
+    draw = ImageDraw.Draw(img)
+    draw.rectangle((x0, y0, x1, y1), outline=(255, 0, 0))
+    plt.clf()
+    plt.imshow(img)
+    plt.pause(1)
+plt.ioff()
+
+图片文件，以 mode='r'的方式读取会出现编码问题，可以以二进制方式访问。
+    fp = open(os.path.join(img_path, img_name), 'rb')
+
+在变量后面加入( # type: 类型名称 )，以后这个变量就会被自动识别为相应的类型，这样就可以很方便的查看其 属性 和 方法 了。
+    img = Image.open(os.path.join(img_path, img_name))  # type: Image.Image
+
+
+2, python中异常处理的固定结构
+try:
+    expression
+except:
+    except expression
+finally:
+    finally expression
