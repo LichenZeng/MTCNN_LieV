@@ -81,3 +81,13 @@ except:
     except expression
 finally:
     finally expression
+
+
+3, 采用如下算法，有的图片框不出 负样本 ，该怎么办？
+    # Negative
+    neg_x0 = round(random.randint(0, w - width))
+    neg_y0 = round(random.randint(0, h - height))
+    neg_x1 = neg_x0 + width
+    neg_y1 = neg_y0 + height
+
+

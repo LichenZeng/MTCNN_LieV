@@ -2,6 +2,15 @@ import numpy as np
 import random
 
 
+def dbg(*args, lv=0):
+    if lv == 1:
+        print("OVO:", *args)
+    elif lv == 2:
+        print("#" * 16 + "\n", *args)
+    elif lv == 3:
+        print("#" * 8 + __file__ + "#" * 8 + "\n", *args)
+
+
 def iou(boxes, box, ismin=False):
     # print("iou")
     maxx0 = np.maximum(boxes[0], box[0])
@@ -28,6 +37,8 @@ def nms():
 
 
 if __name__ == '__main__':
+    dbg(1, 3, 20, 40, lv=3)
+    exit()
     width, height = 30, 35
     box1 = [0, 0, 10, 10]
     box2 = [0, 5, 10, 15]
