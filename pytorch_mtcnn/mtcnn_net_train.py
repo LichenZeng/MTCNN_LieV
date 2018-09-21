@@ -7,7 +7,7 @@ from mtcnn_datasets import DataLoader, mtcnn_dataset, transform, save_path
 from mtcnn_utils import dbg
 from mtcnn_net import pnet, rnet, onet
 
-dlv = 1
+dlv = 0
 
 
 class train_net:
@@ -23,7 +23,7 @@ class train_net:
     def forward(self):
         self.net.train()
         for step, (img, cls, off) in enumerate(self.data_loader):
-            dbg(img.shape, cls.shape, off.shape, lv=dlv + 1)
+            dbg(img.shape, cls.shape, off.shape, lv=dlv)
             _cls, _off = self.net(img)
             _cls = _cls.view(-1, 1)
             _off = _off.view(-1, 4)
@@ -44,11 +44,17 @@ class train_net:
             # dbg(off_s.shape, _off_s.shape, lv=dlv)
             off_loss = self.off_loss_fn(_off_s, off_s)
 
+            loss = cls_loss + off_loss
+            dbg("loss cls: {}, off: {}".format(cls_loss, off_loss), lv=dlv + 1)
+            self.opt.zero_grad()
+            loss.backward()
+            self.opt.step()
+
 
 if __name__ == '__main__':
     pn = pnet()
     train = train_net(pn, 12)
-    for i in range(1):
+    for i in range(10):
         train.forward()
 
     # x = torch.Tensor([1, 0, 2])
