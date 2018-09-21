@@ -10,7 +10,7 @@ from mtcnn_utils import iou, nms, dbg
 
 img_path = "../img_celeba_4dbg"
 label_path = "../img_celeba_4dbg/list_bbox_celeba.txt"
-save_path = "../img_celeba_4dbg_simple"
+save_path = "../../img_celeba_4dbg_simple"
 positive = "positive"
 part = "part"
 negative = "negative"
