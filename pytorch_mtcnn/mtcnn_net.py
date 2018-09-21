@@ -7,7 +7,7 @@ from torchvision import transforms, utils
 from mtcnn_datasets import transform, mtcnn_dataset, DataLoader
 from mtcnn_utils import dbg
 
-dlv = 1
+dlv = 0
 
 
 class pnet(nn.Module):
