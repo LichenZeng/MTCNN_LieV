@@ -32,8 +32,33 @@ def iou(boxes, box, ismin=False):
         return area_com / (area_boxes + area_box - area_com)
 
 
-def nms():
+def nms(box, area, ismin=False):
     print("nms")
+    dbg(box, lv=2)
+
+    boxx = sorted(box, key=lambda b: b[4])
+    print(boxx)
+    # box = np.array(box)
+    # boxn = box[np.argsort(box[:, 4])]
+    # print(boxn)
+    box22 = []
+    while len(boxx) > 0:
+        bb = boxx[-1]
+        box22.append(bb)
+        boxx.remove(bb)
+        print(boxx)
+        dbg("zz", bb, len(boxx), lv=1)
+
+        for i in range(len(boxx)):
+            bx = boxx[-1]
+            ar = iou(bb, bx)
+            print("IOU is \n", ar)
+            if ar > area:
+                boxx.remove(bx)
+        dbg(boxx, lv=2)
+
+    print(box)
+    return box
 
 
 if __name__ == '__main__':
